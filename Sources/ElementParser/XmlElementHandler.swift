@@ -36,12 +36,12 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        parentParser?.addChild(elementEnum: element)
+        parentParser?.addChild(element)
         parser.delegate = parentParser
     }
     
-    private func addChild(elementEnum: Element) {
-        element.addElement(elementEnum: elementEnum)
+    private func addChild(_ child: Element) {
+        element.addElement(child)
     }
 }
 
@@ -89,10 +89,10 @@ public class Element {
         return _attributeDict?[key]
     }
     
-    fileprivate func addElement(elementEnum: Element) {
-        var arr: [Element] = _elements[elementEnum.getName()] ?? []
-        arr.append(elementEnum)
-        _elements[elementEnum.getName()] = arr
+    fileprivate func addElement(_ element: Element) {
+        var elements: [Element] = _elements[element.getName()] ?? []
+        elements.append(element)
+        _elements[element.getName()] = elements
     }
     
     fileprivate func addCharacters(characters: String) {
