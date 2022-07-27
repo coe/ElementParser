@@ -6,7 +6,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     private var element: Element
     private var childParser: XmlElementHandler?
     
-    override init() {
+    public override init() {
         parentParser = nil
         element = .init(elementName: "", elements: [:])
         super.init()
