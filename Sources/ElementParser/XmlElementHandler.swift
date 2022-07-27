@@ -18,7 +18,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
         super.init()
     }
     
-    func getElement(from xmlParser: XMLParser) -> Element {
+    public func getElement(from xmlParser: XMLParser) -> Element {
         xmlParser.shouldProcessNamespaces = true
         xmlParser.delegate = self
         xmlParser.parse()
@@ -61,31 +61,31 @@ public class Element {
     private var _elements: [String: [Element]]
     private var _parent: Element?
     
-    subscript(dynamicMember member: String) -> Element? {
+    public subscript(dynamicMember member: String) -> Element? {
         return _elements[member]?[0]
     }
     
-    subscript(index: Int) -> Element? {
+    public subscript(index: Int) -> Element? {
         return _parent?._elements[_elementName]?[index]
     }
     
-    func getName() -> String {
+    public func getName() -> String {
         return _elementName
     }
     
-    func getStringValue() -> String? {
+    public func getStringValue() -> String? {
         return _characters
     }
     
-    func getArrayValue() -> [Element]? {
+    public func getArrayValue() -> [Element]? {
         return _parent?._elements[_elementName]
     }
     
-    func getAttributeDict() -> [String : String]? {
+    public func getAttributeDict() -> [String : String]? {
         return _attributeDict
     }
     
-    func getAttributeValue(key: String) -> String? {
+    public func getAttributeValue(key: String) -> String? {
         return _attributeDict?[key]
     }
     
