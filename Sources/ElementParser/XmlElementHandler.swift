@@ -26,6 +26,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        print(#function, "elementName", elementName)
         let child = XmlElementHandler(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
         childParser = child
         parser.delegate = child
@@ -36,6 +37,9 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        print(#function, "elementName", elementName)
+        print(#function, "parentParser", parentParser)
+
         parentParser?.addChild(elementEnum: element)
         parser.delegate = parentParser
     }
@@ -68,7 +72,6 @@ public class Element {
     subscript(index: Int) -> Element? {
         return _parent?._elements[_elementName]?[index]
     }
-    
     
     func getElementName() -> String {
         return _elementName
