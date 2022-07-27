@@ -1,17 +1,10 @@
 import Foundation
 
-public class ElementParser: NSObject, XMLParserDelegate {
-    private let parentParser: ElementParser?
-
+public class XmlElementHandler: NSObject, XMLParserDelegate {
+    private let parentParser: XmlElementHandler?
+    
     private var element: Element
-    private var childParsers: [ElementParser] = []
-
-    func getElement(from xmlParser: XMLParser) -> Element {
-        xmlParser.shouldProcessNamespaces = true
-        xmlParser.delegate = self
-        xmlParser.parse()
-        return element
-    }
+    private var childParsers: [XmlElementHandler] = []
     
     override init() {
         parentParser = nil
@@ -19,18 +12,21 @@ public class ElementParser: NSObject, XMLParserDelegate {
         super.init()
     }
     
-    private init(parser: XMLParser, elementName: String, attributeDict: [String : String], parent: ElementParser, parentElement: Element?) {
+    private init(parser: XMLParser, elementName: String, attributeDict: [String : String], parent: XmlElementHandler, parentElement: Element?) {
         self.parentParser = parent
         element = .init(elementName: elementName, characters: nil, attributeDict: attributeDict, elements: [:], parent: parentElement)
         super.init()
     }
     
-    private func addChild(elementEnum: Element) {
-        element.addElement(elementEnum: elementEnum)
+    func getElement(from xmlParser: XMLParser) -> Element {
+        xmlParser.shouldProcessNamespaces = true
+        xmlParser.delegate = self
+        xmlParser.parse()
+        return element
     }
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        let child = ElementParser(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
+        let child = XmlElementHandler(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
         childParsers.append(child)
         parser.delegate = child
     }
@@ -42,6 +38,10 @@ public class ElementParser: NSObject, XMLParserDelegate {
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         parentParser?.addChild(elementEnum: element)
         parser.delegate = parentParser
+    }
+    
+    private func addChild(elementEnum: Element) {
+        element.addElement(elementEnum: elementEnum)
     }
 }
 
@@ -60,7 +60,7 @@ public class Element {
     private var _attributeDict: [String : String]?
     private var _elements: [String: [Element]]
     private var _parent: Element?
-
+    
     subscript(dynamicMember member: String) -> Element? {
         return _elements[member]?[0]
     }
