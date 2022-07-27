@@ -4,7 +4,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     private let parentParser: XmlElementHandler?
     
     private var element: Element
-    private var childParsers: [XmlElementHandler] = []
+    private var childParser: XmlElementHandler?
     
     override init() {
         parentParser = nil
@@ -27,7 +27,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         let child = XmlElementHandler(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
-        childParsers.append(child)
+        childParser = child
         parser.delegate = child
     }
     
