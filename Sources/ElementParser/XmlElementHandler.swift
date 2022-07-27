@@ -26,7 +26,6 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        print(#function, "elementName", elementName)
         let child = XmlElementHandler(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
         childParser = child
         parser.delegate = child
@@ -37,9 +36,6 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        print(#function, "elementName", elementName)
-        print(#function, "parentParser", parentParser)
-
         parentParser?.addChild(elementEnum: element)
         parser.delegate = parentParser
     }
@@ -73,7 +69,7 @@ public class Element {
         return _parent?._elements[_elementName]?[index]
     }
     
-    func getElementName() -> String {
+    func getName() -> String {
         return _elementName
     }
     
@@ -85,14 +81,18 @@ public class Element {
         return _parent?._elements[_elementName]
     }
     
+    func getAttributeDict() -> [String : String]? {
+        return _attributeDict
+    }
+    
     func getAttributeValue(key: String) -> String? {
         return _attributeDict?[key]
     }
     
     fileprivate func addElement(elementEnum: Element) {
-        var arr: [Element] = _elements[elementEnum.getElementName()] ?? []
+        var arr: [Element] = _elements[elementEnum.getName()] ?? []
         arr.append(elementEnum)
-        _elements[elementEnum.getElementName()] = arr
+        _elements[elementEnum.getName()] = arr
     }
     
     fileprivate func addCharacters(characters: String) {

@@ -17,7 +17,6 @@ final class ElementParserTests: XCTestCase {
     func testElement2Parser() throws {
         let parser = XmlElementHandler()
         let rss1 = parser.getElement(from: XMLParser(data: rss2Xml.data(using: .utf8)!))
-        XCTAssertFalse(rss1.getElements().isEmpty)
         XCTAssertNotNil(rss1.rss)
         XCTAssertEqual(rss1.rss?.channel?.title?.getStringValue(), "coffeegyunyu")
         XCTAssertEqual(rss1.rss?.channel?.accentColor?.getStringValue(), "249F80")
@@ -25,6 +24,12 @@ final class ElementParserTests: XCTestCase {
 
         XCTAssertEqual(rss1.rss?.channel?.item?.title?.getStringValue(), rss1.rss?.channel?.item?[0]?.title?.getStringValue())
         XCTAssertEqual(rss1.rss?.channel?.item?[1]?.title?.getStringValue(), "プログラミングで年収1000万を目指すために確認すべき、たった一つのこととは？")
+        
+        // trim CDATA
+        XCTAssertEqual(rss1.rss?.channel?.item?[4]?.description?.getStringValue()?.trimmingCharacters(in: .whitespacesAndNewlines), """
+    <p name="MCVCB">必要に迫られたのでnoteを開設しました。</p><p name="fbFZ4">ということでiOSDC 2021にスピーカーとして参加してました。自分のセッションに関しては別なところで書こうと思います。好きなパンは東京都板橋区にあるブランジェリーケンのみそナッツクリームチーズベーグルです。資料の中にハッシュタグありますけどこれはiOSDCチャレンジトークンではありません。</p><br/><a href='https://note.com/coffeegyunyu/n/n4a4f393cbd37'>続きをみる</a>
+    """)
+
         XCTAssertEqual(rss1.rss?.getAttributeValue(key: "version"), "2.0")
         XCTAssertEqual(rss1.rss?.channel?.related?.getAttributeValue(key: "layout"), "card")
 
