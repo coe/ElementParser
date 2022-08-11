@@ -1,10 +1,10 @@
 import Foundation
 
-public class XmlElementHandler: NSObject, XMLParserDelegate {
-    private let parentParser: XmlElementHandler?
+public class ElementParser: NSObject, XMLParserDelegate {
+    private let parentParser: ElementParser?
     
     private var element: Element
-    private var childParser: XmlElementHandler?
+    private var childParser: ElementParser?
     
     public override init() {
         parentParser = nil
@@ -12,7 +12,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
         super.init()
     }
     
-    private init(parser: XMLParser, elementName: String, attributeDict: [String : String], parent: XmlElementHandler, parentElement: Element?) {
+    private init(parser: XMLParser, elementName: String, attributeDict: [String : String], parent: ElementParser, parentElement: Element?) {
         self.parentParser = parent
         element = .init(elementName: elementName, characters: nil, attributeDict: attributeDict, elements: [:], parent: parentElement)
         super.init()
@@ -26,7 +26,7 @@ public class XmlElementHandler: NSObject, XMLParserDelegate {
     }
     
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        let child = XmlElementHandler(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
+        let child = ElementParser(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
         childParser = child
         parser.delegate = child
     }

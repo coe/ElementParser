@@ -3,7 +3,7 @@ import XCTest
 
 final class ElementParserTests: XCTestCase {
     func testElementParser() throws {
-        let parser = XmlElementHandler()
+        let parser = ElementParser()
         let rss1 = parser.getElement(from: XMLParser(data: rss1Xml.data(using: .utf8)!))
         XCTAssertEqual(rss1.rss?.channel?.title?.getStringValue(), "Yahoo!ニュース・トピックス - 主要")
         XCTAssertEqual(rss1.rss?.channel?.link?.getStringValue(), "https://news.yahoo.co.jp/topics/top-picks?source=rss")
@@ -15,7 +15,7 @@ final class ElementParserTests: XCTestCase {
     }
     
     func testElement2Parser() throws {
-        let parser = XmlElementHandler()
+        let parser = ElementParser()
         let rss1 = parser.getElement(from: XMLParser(data: rss2Xml.data(using: .utf8)!))
         XCTAssertNotNil(rss1.rss)
         XCTAssertEqual(rss1.rss?.channel?.title?.getStringValue(), "coffeegyunyu")
