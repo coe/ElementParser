@@ -18,35 +18,56 @@ public class ElementParser: NSObject, XMLParserDelegate {
         super.init()
     }
     
-    public func getElement(from xmlParser: XMLParser) -> Element {
+    public func getDocument(from xmlParser: XMLParser) -> Element {
         xmlParser.shouldProcessNamespaces = true
         xmlParser.delegate = self
         xmlParser.parse()
         return element
     }
     
-    public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
-        let child = ElementParser(parser: parser, elementName: elementName, attributeDict: attributeDict, parent: self, parentElement: element)
-        childParser = child
-        parser.delegate = child
-    }
+public func parser(_ parser: XMLParser,
+                   didStartElement elementName: String,
+                   namespaceURI: String?,
+                   qualifiedName qName: String?,
+                   attributes attributeDict: [String : String] = [:]) {
+    let child = ElementParser(parser: parser,
+                              elementName: elementName,
+                              attributeDict: attributeDict,
+                              parent: self,
+                              parentElement: element)
+    childParser = child
+    parser.delegate = child
+}
     
     public func parser(_ parser: XMLParser, foundCharacters string: String) {
         element.addCharacters(characters: string)
     }
     
-    public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        parentParser?.addChild(element)
-        parser.delegate = parentParser
-    }
+public func parser(_ parser: XMLParser,
+                    didEndElement elementName: String,
+                    namespaceURI: String?,
+                    qualifiedName qName: String?) {
+    parentParser?.addChild(element)
+    parser.delegate = parentParser
+}
     
-    private func addChild(_ child: Element) {
-        element.addElement(child)
-    }
+private func addChild(_ child: Element) {
+    element.addElement(child)
+}
 }
 
 @dynamicMemberLookup
 public class Element {
+    private var _elements: [String: [Element]]
+
+    public subscript(dynamicMember member: String) -> Element? {
+        return _elements[member]?[0]
+    }
+    
+    public subscript(index: Int) -> Element? {
+        return _parent?._elements[_elementName]?[index]
+    }
+    
     internal init(elementName: String, characters: String? = nil, attributeDict: [String : String]? = nil, elements: [String : [Element]], parent: Element? = nil) {
         _elementName = elementName
         _characters = characters
@@ -58,16 +79,9 @@ public class Element {
     private var _elementName: String
     private var _characters: String?
     private var _attributeDict: [String : String]?
-    private var _elements: [String: [Element]]
     private var _parent: Element?
     
-    public subscript(dynamicMember member: String) -> Element? {
-        return _elements[member]?[0]
-    }
-    
-    public subscript(index: Int) -> Element? {
-        return _parent?._elements[_elementName]?[index]
-    }
+
     
     public func getName() -> String {
         return _elementName

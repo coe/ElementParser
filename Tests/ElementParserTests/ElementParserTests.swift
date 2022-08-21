@@ -2,26 +2,14 @@ import XCTest
 @testable import ElementParser
 
 final class ElementParserTests: XCTestCase {
-    func testElementParser() throws {
-        let parser = ElementParser()
-        let rss1 = parser.getElement(from: XMLParser(data: rss1Xml.data(using: .utf8)!))
-        XCTAssertEqual(rss1.rss?.channel?.title?.getStringValue(), "Yahoo!ニュース・トピックス - 主要")
-        XCTAssertEqual(rss1.rss?.channel?.link?.getStringValue(), "https://news.yahoo.co.jp/topics/top-picks?source=rss")
-
-        XCTAssertEqual(rss1.rss?.channel?.item?[0]?.title?.getStringValue(), "東・西日本、局地的な大雨の恐れ")
-        XCTAssertEqual(rss1.rss?.channel?.item?[0]?.pubDate?.getStringValue(), "Tue, 26 Jul 2022 21:40:13 GMT")
-
-        XCTAssertEqual(rss1.rss?.channel?.item?.getArrayValue()?.count,8)
-    }
-    
     func testElement2Parser() throws {
         let parser = ElementParser()
-        let rss1 = parser.getElement(from: XMLParser(data: rss2Xml.data(using: .utf8)!))
+        let rss1 = parser.getDocument(from: XMLParser(data: noteXml.data(using: .utf8)!))
         XCTAssertNotNil(rss1.rss)
         XCTAssertEqual(rss1.rss?.channel?.title?.getStringValue(), "coffeegyunyu")
         XCTAssertEqual(rss1.rss?.channel?.accentColor?.getStringValue(), "249F80")
         XCTAssertEqual(rss1.rss?.channel?.item?.getArrayValue()?.count, 5)
-
+        
         XCTAssertEqual(rss1.rss?.channel?.item?.title?.getStringValue(), rss1.rss?.channel?.item?[0]?.title?.getStringValue())
         XCTAssertEqual(rss1.rss?.channel?.item?[1]?.title?.getStringValue(), "プログラミングで年収1000万を目指すために確認すべき、たった一つのこととは？")
         
@@ -29,14 +17,14 @@ final class ElementParserTests: XCTestCase {
         XCTAssertEqual(rss1.rss?.channel?.item?[4]?.description?.getStringValue()?.trimmingCharacters(in: .whitespacesAndNewlines), """
     <p name="MCVCB">必要に迫られたのでnoteを開設しました。</p><p name="fbFZ4">ということでiOSDC 2021にスピーカーとして参加してました。自分のセッションに関しては別なところで書こうと思います。好きなパンは東京都板橋区にあるブランジェリーケンのみそナッツクリームチーズベーグルです。資料の中にハッシュタグありますけどこれはiOSDCチャレンジトークンではありません。</p><br/><a href='https://note.com/coffeegyunyu/n/n4a4f393cbd37'>続きをみる</a>
     """)
-
+        
         XCTAssertEqual(rss1.rss?.getAttributeValue(key: "version"), "2.0")
         XCTAssertEqual(rss1.rss?.channel?.related?.getAttributeValue(key: "layout"), "card")
-
-
+        
+        
     }
     
-    private let rss2Xml: String = """
+    private let noteXml: String = """
 <rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"
     xmlns:note="https://note.com" xmlns:webfeeds="http://webfeeds.org/rss/1.0"
     version="2.0">
@@ -156,65 +144,272 @@ final class ElementParserTests: XCTestCase {
     </channel>
 </rss>
 """
-    
-    private let rss1Xml: String = """
-<rss version="2.0">
-<channel>
-<language>ja</language>
-<copyright>© Yahoo Japan</copyright>
-<pubDate>Wed, 27 Jul 2022 00:19:07 GMT</pubDate>
-<title>Yahoo!ニュース・トピックス - 主要</title>
-<link>https://news.yahoo.co.jp/topics/top-picks?source=rss</link>
-<description>Yahoo! JAPANのニュース・トピックスで取り上げている最新の見出しを提供しています。</description>
-<item>
-<title>東・西日本、局地的な大雨の恐れ</title>
-<link>https://news.yahoo.co.jp/pickup/6433776?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 21:40:13 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/037452c143503a5f50436f25cf89e583a6c80b30/comments</comments>
-</item>
-<item>
-<title>医療・福祉 40年には100万人不足</title>
-<link>https://news.yahoo.co.jp/pickup/6433784?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 23:21:02 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/9abd21b98f078d519460f7e3480b8ae94729000f/comments</comments>
-</item>
-<item>
-<title>学術会議 軍民「両用」の研究容認</title>
-<link>https://news.yahoo.co.jp/pickup/6433782?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 23:03:57 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/5f4671883f9abb10a1c8096d03b038b00d0ca68f/comments</comments>
-</item>
-<item>
-<title>露 欧米が停戦合意「禁止」と主張</title>
-<link>https://news.yahoo.co.jp/pickup/6433788?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 23:50:59 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/acbdc7abb3c17924f8066ee529970916a708dfe2/comments</comments>
-</item>
-<item>
-<title>患者増 FAXに「逆戻り」の保健所</title>
-<link>https://news.yahoo.co.jp/pickup/6433783?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 22:49:26 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/7ce68ff7e2f930aad881fd573ad31b4220bf2fe3/comments</comments>
-</item>
-<item>
-<title>美誠Tリーグ初参戦 日本生命加入</title>
-<link>https://news.yahoo.co.jp/pickup/6433786?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 23:30:34 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/494a5b8f9f4f8f5ef419a33b70e3518e3a341a70/comments</comments>
-</item>
-<item>
-<title>TKO木本 芸人ら個別に事情説明</title>
-<link>https://news.yahoo.co.jp/pickup/6433785?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 23:12:44 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/8ca3b9f2ca418d353b1b02a6d55fc85267d1ddd7/comments</comments>
-</item>
-<item>
-<title>島田陽子さん 遺作が年内公開へ</title>
-<link>https://news.yahoo.co.jp/pickup/6433780?source=rss</link>
-<pubDate>Tue, 26 Jul 2022 22:40:19 GMT</pubDate>
-<comments>https://news.yahoo.co.jp/articles/09c8b3acdaba671c76bc5dcd637eab631f8ee3b4/comments</comments>
-</item>
-</channel>
-</rss>
+    private let atomXml: String = """
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>gihyo.jp：WEB+DB PRESS</title>
+<subtitle>gihyo.jp（WEB+DB PRESS）の更新情報をお届けします</subtitle>
+<id>https://gihyo.jp/magazine/wdpress</id>
+<link href="https://gihyo.jp/magazine/wdpress"/>
+<author>
+<name>技術評論社</name>
+</author>
+<updated>2022-08-11T14:22:00+09:00</updated>
+<rights>技術評論社 2022</rights>
+<icon>https://gihyo.jp/assets/templates/gihyojp2007/image/header_logo_gihyo.gif</icon>
+<entry>
+<title>番外編●特別コラム［関数プログラミング実践入門 ──簡潔で、正しいコードを書くために］ ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6926-2/0002"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6926-2/0002</id>
+<published>2014-11-14T10:46:00+09:00</published>
+<updated>2014-11-14T10:46:00+09:00</updated>
+<author>
+<name>大川徳之</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>長らく歴史のある「関数プログラミング」ですが，最近，種々の条件が揃いはじめ，ますますよく登場するキーワードになりつつあるようです。</summary>
+</entry>
+<entry>
+<title>本書について［関数プログラミング実践入門 ──簡潔で、正しいコードを書くために］ ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6926-2/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6926-2/0001</id>
+<published>2014-11-14T10:45:00+09:00</published>
+<updated>2014-11-14T10:45:00+09:00</updated>
+<author>
+<name>大川徳之</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>「関数プログラミング」は，関数型言語プログラマのみならず，すべてのプログラマにとっても急激に身近なものになってきました。</summary>
+</entry>
+<entry>
+<title>本書について［クラウドを支える技術 ──データセンターサイズのマシン設計法］ ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6730-5/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6730-5/0001</id>
+<published>2014-09-26T13:14:00+09:00</published>
+<updated>2014-09-26T13:14:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>コンピューティングがクラウド（Cloud）に移行するにつれて，インターネットで使用されるコンピュータプラットフォームは宅配ピザの箱や冷蔵庫のような格好ではなく，倉庫（Warehouse）いっぱいのコンピュータ群になってきています。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6500-4/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6500-4/0001</id>
+<published>2014-05-19T10:47:00+09:00</published>
+<updated>2014-05-19T10:47:00+09:00</updated>
+<author>
+<name>安藤祐介</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>CakePHPを主に取り上げた書籍が日本で最初に出版されたのは，2007年10月のことでした。</summary>
+</entry>
+<entry>
+<title>本書について ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6426-7/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6426-7/0001</id>
+<published>2014-04-25T11:17:00+09:00</published>
+<updated>2014-04-25T11:17:00+09:00</updated>
+<author>
+<name>Hisa Ando</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>コンピュータは，普及が著しいスマートフォンやタブレットに使われており，GoogleやFacebookなどのデータセンターにも大量に使われています。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6428-1/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6428-1/0001</id>
+<published>2014-04-15T10:56:00+09:00</published>
+<updated>2014-04-15T10:56:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>本書は「チーム開発実践入門」です。読者のみなさんの中にはよくご存じの方も多いかとは思いますが，チーム開発というのは複雑で難しいものです。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6366-6/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6366-6/0001</id>
+<published>2014-03-13T11:57:00+09:00</published>
+<updated>2014-03-13T11:57:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>本書は，世界中の開発者が行っているGitHubを利用した開発方法を，みなさんが現場で使えるようになるためのガイドとして執筆しました。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6286-7/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-6286-7/0001</id>
+<published>2014-02-07T13:50:00+09:00</published>
+<updated>2014-02-07T13:50:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>インフラデザインパターンは，インフラ開発における問題発生の抑制や生産性の向上，人材育成などを目的に，インフラ技術者たちが編み出した設計方式を概念化・抽象化して名前（パターン名）を付け，その特徴や留意点を記載したものです。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5654-5/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5654-5/0001</id>
+<published>2013-04-17T11:31:00+09:00</published>
+<updated>2013-04-17T11:31:00+09:00</updated>
+<author>
+<name>西尾泰和</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>世の中にはたくさんのプログラミング言語があります。読むべきドキュメントもたくさんあります。しかしあなたの使える時間は有限です。すべてを学ぶことはできません。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5377-3/0002"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5377-3/0002</id>
+<published>2012-11-07T11:00:01+09:00</published>
+<updated>2012-11-07T11:00:01+09:00</updated>
+<author>
+<name>渡辺修司</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>本書はJavaプログラマを対象としたJUnitによるユニットテストの実践ガイドです。</summary>
+</entry>
+<entry>
+<title>推薦のことば ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5377-3/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5377-3/0001</id>
+<published>2012-11-07T11:00:00+09:00</published>
+<updated>2012-11-07T11:00:00+09:00</updated>
+<author>
+<name>和田卓人</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>みなさんは，JUnitでユニットテストを書いていますか？</summary>
+</entry>
+<entry>
+<title>第1章　JavaScript入門準備 ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5376-6/0002"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5376-6/0002</id>
+<published>2012-10-31T10:46:00+09:00</published>
+<updated>2012-10-31T10:46:00+09:00</updated>
+<author>
+<name>外村和仁</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>WEB+DB PRESS Plusシリーズ「ノンプログラマのためのJavaScriptはじめの一歩」の第1章です。本章ではまず，プログラムを初めて学ぶ人に向けて，プログラムを学ぶうえでの心構えを説明します。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5376-6/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5376-6/0001</id>
+<published>2012-10-31T10:45:00+09:00</published>
+<updated>2012-10-31T10:45:00+09:00</updated>
+<author>
+<name>外村和仁</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>JavaScriptは現在，Webアプリケーションを作るうえで欠かせないプログラミング言語となっています。</summary>
+</entry>
+<entry>
+<title>はじめに ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5324-7/0002"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5324-7/0002</id>
+<published>2012-09-28T10:36:00+09:00</published>
+<updated>2012-09-28T10:36:00+09:00</updated>
+<author>
+<name>安藤祐介</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>CakePHPを主に取り上げた書籍が日本で最初に出版されたのは，2007年10月のことでした。</summary>
+</entry>
+<entry>
+<title>本書に寄せて ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5324-7/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5324-7/0001</id>
+<published>2012-09-28T10:35:00+09:00</published>
+<updated>2012-09-28T10:35:00+09:00</updated>
+<author>
+<name/>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>私は12年間，PHP開発者として働いてきて，開発者として，スピーカーとして，そしてカンファレンスやコミュニティ活動に関わる一個人として成長したと思います。</summary>
+</entry>
+<entry>
+<title>はじめに『Emacs実践入門―思考を直感的にコード化し，開発を加速する』 ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5002-4/0002"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5002-4/0002</id>
+<published>2012-03-05T11:26:00+09:00</published>
+<updated>2012-03-05T11:26:00+09:00</updated>
+<author>
+<name>大竹智也</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>Wikipediaに次のように書かれています。</summary>
+</entry>
+<entry>
+<title>本書に寄せて『Emacs実践入門―思考を直感的にコード化し，開発を加速する』 ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5002-4/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-5002-4/0001</id>
+<published>2012-03-05T11:25:00+09:00</published>
+<updated>2012-03-05T11:25:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>私はEmacs使いです。最初にEmacsに接したのは，私がまだ大学生だったころの1988年のことです。</summary>
+</entry>
+<entry>
+<title>はじめに『日本語入力を支える技術 ―変わり続けるコンピュータと言葉の世界』 ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-4993-6/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-4993-6/0001</id>
+<published>2012-02-09T11:19:00+09:00</published>
+<updated>2012-02-09T11:19:00+09:00</updated>
+<author>
+<name>徳永拓之</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>本書は，コンピュータで日本語を入力する際に必要となるソフトウェアについての本です。</summary>
+</entry>
+<entry>
+<title>はじめに『Jenkins実践入門　～ビルド・テスト・デプロイを自動化する技術』 ── WEB+DB PRESS plusシリーズ</title>
+<link href="https://gihyo.jp/magazine/wdpress/plus/978-4-7741-4891-5/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/plus/978-4-7741-4891-5/0001</id>
+<published>2011-11-09T11:00:00+09:00</published>
+<updated>2011-11-09T11:00:00+09:00</updated>
+<author>
+<name>佐藤聖規</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/plus" term="WEB+DB PRESS plusシリーズ" xml:lang="ja"/>
+<summary>みなさん，ソフトウェア・システム開発の現場でこんなことに困っていませんか？</summary>
+</entry>
+<entry>
+<title>WEB+DB PRESS総集編に寄せて（書き下ろしエッセイの執筆陣より）</title>
+<link href="https://gihyo.jp/magazine/wdpress/sp/978-4-7741-4831-1/0001"/>
+<id>https://gihyo.jp/magazine/wdpress/sp/978-4-7741-4831-1/0001</id>
+<published>2011-10-14T13:06:00+09:00</published>
+<updated>2011-10-14T13:06:00+09:00</updated>
+<author>
+<name>技術評論社</name>
+</author>
+<category scheme="https://gihyo.jp/magazine/wdpress/sp" term="" xml:lang="ja"/>
+<summary/>
+</entry>
+</feed>
+"""
+    private let profileXml: String = """
+<プロフィール>
+    <名前>日向強</名前>
+    <所属>株式会社Amazia</所属>
+    <過去のiOSDC>
+        <タイトル year="2019">BLEでiOS/Android間でそこそこ大きなサイズのデータ通信を実現する (L2CAPもあるよ)</タイトル>
+        <タイトル year="2020">詳解Storyboard</タイトル>
+        <タイトル year="2020">あなたの知らない連絡先の世界</タイトル>
+        <タイトル year="2021">バックグラウンドでアプリがキルされても怖くない！アプリの状態を元に戻すリストア機能の全て</タイトル>
+    </過去のiOSDC>
+    <好きな3DO>REAL</好きな3DO>
+    <特技>遠くでテレビの電源が入ったことがわかる</特技>
+</プロフィール>
 """
 }
